@@ -1,9 +1,8 @@
-function graph(selector, obj, length, type) {
-
+function graph(selector, obj, length) {
 	this.length = length;
 	this.obj = obj;
-	this.graph = new area_chart(selector, obj, length, type);
-	this.type = type || false;
+	this.type = 'tick';
+	this.graph = new area_chart(selector, obj, length, this.type);
 	this.redraw = function(interval) {
 		if(typeof interval != 'undefined') {
 			this.obj.data = interval;
@@ -14,8 +13,8 @@ function graph(selector, obj, length, type) {
 		}
 		this.graph = new area_chart(selector, this.obj, this.length, this.type);
 	}
-    this.redraw();
 
+    this.redraw();
 }
 
 function area_chart(selector, obj, length, type) {
@@ -47,6 +46,7 @@ function area_chart(selector, obj, length, type) {
 			this.obj.data = this.obj.data.slice(-1*this.n);
 		}
 	}
+
 	var margin = {top: 10, right: 0, bottom: 20, left: -1},
 		width = parseInt(d3.select(selector).style('width')) - margin.left - margin.right,
 		height = parseInt(d3.select(selector).style('height')) - margin.top - margin.bottom;
@@ -94,8 +94,6 @@ function area_chart(selector, obj, length, type) {
 		.attr("class", "y axis")
 		.call(this.yaxis);
 
-
-
 	this.svg.append("svg:g")
 		.attr("class", "y stripe")
 		.attr("transform", "translate(0,0)")
@@ -129,6 +127,12 @@ function area_chart(selector, obj, length, type) {
 	this.draw = function(duration, current, func) {
 
 		var callback = func || function() { return; };
+
+        // recalculate range
+    	this.range = Math.max.apply(Math, this.obj.data.map(Math.abs));
+    	this.y = d3.scale.linear()
+    		.domain([-1*this.range, this.range])
+    		.range([height, 0]);
 
 		// redraw the line, and slide it to the left
 
@@ -181,6 +185,7 @@ function ticker(parent) {
 		} else {
 			val = 0;
 		}
+
 		parent.obj.data.push(val);
 		parent.now = new Date() - parent.offset;
 		parent.x.domain([parent.now - (parent.n - 2) * parent.duration, parent.now]);
