@@ -7,7 +7,7 @@ function graph(selector, obj, length) {
 		if(typeof interval != 'undefined') {
 			this.obj.data = interval;
 		}
-		$(selector + ' > svg').remove();
+		d3.select(selector + ' > svg').remove();
 		if(this.graph.type == 'tick') {
 			this.graph.ticker.stop();
 		}
@@ -106,9 +106,9 @@ function area_chart(selector, obj, length, type) {
 
 	this.area = d3.svg.area()
 		.interpolate("basis")
-		.x($.proxy(function(d, i) { return this.x(this.now - (this.n - 1 - i) * this.duration); },this))
+		.x((function(d, i) { return this.x(this.now - (this.n - 1 - i) * this.duration); }).bind(this))
 		.y0(function(d){ return height/2 })
-		.y1($.proxy(function(d, i) { return this.y(d); },this));
+		.y1((function(d, i) { return this.y(d); }).bind(this));
 
 	this.positive_area = this.svg.append("g")
 		.attr("clip-path", "url(#"+this.selector.replace('#','')+"_positive)")
