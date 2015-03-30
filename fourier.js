@@ -2,7 +2,7 @@ function graph(selector, obj, length) {
 	this.length = length;
 	this.obj = obj;
 	this.type = 'tick';
-	this.graph = new area_chart(selector, obj, length, this.type);
+	this.graph = new areaChart(selector, obj, length, this.type);
 	this.redraw = function(interval) {
 		if(typeof interval != 'undefined') {
 			this.obj.data = interval;
@@ -11,13 +11,13 @@ function graph(selector, obj, length) {
 		if(this.graph.type == 'tick') {
 			this.graph.ticker.stop();
 		}
-		this.graph = new area_chart(selector, this.obj, this.length, this.type);
+		this.graph = new areaChart(selector, this.obj, this.length, this.type);
 	}
 
     this.redraw();
 }
 
-function area_chart(selector, obj, length, type) {
+function areaChart(selector, obj, length, type) {
 
 	this.n = length;
 	this.duration = 1000;
@@ -110,14 +110,14 @@ function area_chart(selector, obj, length, type) {
 		.y0(function(d){ return height/2 })
 		.y1((function(d, i) { return this.y(d); }).bind(this));
 
-	this.positive_area = this.svg.append("g")
+	this.positiveArea = this.svg.append("g")
 		.attr("clip-path", "url(#"+this.selector.replace('#','')+"_positive)")
 		.append("path")
 		.data([this.obj.data])
 		.attr("class", "positive")
 		.attr("d", this.area);
 
-	this.negative_area = this.svg.append("g")
+	this.negativeArea = this.svg.append("g")
 		.attr("clip-path", "url(#"+this.selector.replace('#','')+"_negative)")
 		.append("path")
 		.data([this.obj.data])
@@ -142,7 +142,7 @@ function area_chart(selector, obj, length, type) {
 			.ease("linear")
 			.call(this.xaxis);
 
-		this.negative_area
+		this.negativeArea
 			.attr("d", this.area)
 			.attr("transform", null)
 			.transition()
@@ -150,7 +150,7 @@ function area_chart(selector, obj, length, type) {
 			.ease("linear")
 			.attr("transform", "translate(" + this.x(current - (this.n - 1) * this.duration) + ")");
 
-		this.positive_area
+		this.positiveArea
 			.attr("d", this.area)
 			.attr("transform", null)
 			.transition()
